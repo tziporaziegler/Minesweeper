@@ -286,7 +286,7 @@ public class Board extends JFrame {
 
 		for (int col = 0; col < cols; col++) {
 			for (int row = 0; row < rows; row++) {
-				Cell cell = cells[col][row];
+				final Cell cell = cells[col][row];
 				if (cell.isBomb()) {
 					numBombsLeft++;
 				}
@@ -334,7 +334,7 @@ public class Board extends JFrame {
 			for (int m = -1; m < 2; m++) {
 
 				// skip center box
-				boolean centerBox = k == 0 && m == 0;
+				final boolean centerBox = k == 0 && m == 0;
 
 				if (!centerBox && isBomb(i + k, j + m)) {
 					numBombs++;
@@ -358,10 +358,11 @@ public class Board extends JFrame {
 		// go to each neighbor and check if flagged
 		for (int k = -1; k < 2; k++) {
 			for (int m = -1; m < 2; m++) {
-				if (k == 0 && m == 0) {
-					// skip center box
-				}
-				else if (isFlagged(i + k, j + m)) {
+
+				// skip center box
+				final boolean centerBox = k == 0 && m == 0;
+
+				if (!centerBox && isFlagged(i + k, j + m)) {
 					numFlags++;
 				}
 			}
@@ -379,7 +380,7 @@ public class Board extends JFrame {
 	}
 
 	private void unlockNeighbors(Cell currentCell) {
-		Stack<Cell> stack = new Stack<Cell>();
+		final Stack<Cell> stack = new Stack<Cell>();
 		stack.push(currentCell);
 		while (!stack.isEmpty()) {
 			final Cell cell = stack.pop();
@@ -390,23 +391,22 @@ public class Board extends JFrame {
 			// check all neighbors
 			for (int i = -1; i < 2; i++) {
 				for (int j = -1; j < 2; j++) {
-					if (isCell(row + i, col + j)) {
 
-						// skip center box
-						if (i != 0 || j != 0) {
-							final Cell thisCell = cells[row + i][col + j];
+					// i != 0 || j != 0 - skip center box
+					if (isCell(row + i, col + j) && (i != 0 || j != 0)) {
 
-							// the following check is only for flag unlock and not 0 unlock
-							if (thisCell.isBomb() && !thisCell.isFlagged()) {
-								looseGame();
-							}
+						final Cell thisCell = cells[row + i][col + j];
 
-							if (!thisCell.isUnlocked() && !thisCell.isFlagged()) {
-								thisCell.unlock();
-								numCellsToUncover--;
-								if (thisCell.getNumBombNeighbors() == 0) {
-									stack.push(thisCell);
-								}
+						// the following check is only for flag unlock and not 0 unlock
+						if (thisCell.isBomb() && !thisCell.isFlagged()) {
+							looseGame();
+						}
+
+						if (!thisCell.isUnlocked() && !thisCell.isFlagged()) {
+							thisCell.unlock();
+							numCellsToUncover--;
+							if (thisCell.getNumBombNeighbors() == 0) {
+								stack.push(thisCell);
 							}
 						}
 					}
@@ -479,8 +479,8 @@ public class Board extends JFrame {
 	private void winGame() {
 		endGame();
 		updateBombsLeft(0);
-		for (Cell[] cellRow : cells) {
-			for (Cell cell : cellRow) {
+		for (final Cell[] cellRow : cells) {
+			for (final Cell cell : cellRow) {
 				if (!cell.isUnlocked()) {
 
 					cell.setIsUnlocked(true);

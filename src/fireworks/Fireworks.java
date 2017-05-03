@@ -96,7 +96,7 @@ public class Fireworks extends JFrame implements Runnable {
 	}
 
 	public void process() {
-		for (int i = 0; i < firework.length; i++)
+		for (int i = 0; i < firework.length; i++) {
 			if (firework[i] != null) {
 				for (int i2 = 0; i2 < firework[i].fireworkFlameParticle.length; i2++) {
 					final FireworkFlameParticle FFP = firework[i].fireworkFlameParticle[i2];
@@ -181,7 +181,9 @@ public class Fireworks extends JFrame implements Runnable {
 							else {
 								yVelocity = -0.1 - Math.random() * Math.random() * 5;
 							}
-							int size = 1 + (int) (Math.random() * 4);
+							
+							final int size = 1 + (int) (Math.random() * 4);
+							
 							firework[i].fireworkParticle[i2] = new FireworkParticle(firework[i].getX(),
 									firework[i].getY(), size, size, xVelocity, yVelocity,
 									new Color((int) (Math.random() * 0xFFFFFF)));
@@ -189,6 +191,7 @@ public class Fireworks extends JFrame implements Runnable {
 					}
 				}
 			}
+		}
 	}
 
 	@Override
