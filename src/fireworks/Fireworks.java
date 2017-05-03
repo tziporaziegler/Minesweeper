@@ -42,7 +42,7 @@ public class Fireworks extends JFrame implements Runnable {
 		});
 
 		// Fireworks display automatically runs for 15 seconds and then closes
-		Timer time = new Timer(15000, new ActionListener() {
+		final Timer time = new Timer(15000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -61,21 +61,16 @@ public class Fireworks extends JFrame implements Runnable {
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			for (Firework firework2 : firework)
+			for (final Firework firework2 : firework) {
 				if (firework2 != null) {
-					for (FireworkFlameParticle FFP : firework2.fireworkFlameParticle) {
+					for (final FireworkFlameParticle FFP : firework2.fireworkFlameParticle) {
 						if (FFP != null) {
 							g.setColor(FFP.getColor());
 							g.fillRect((int) FFP.getX(), (int) FFP.getY(), FFP.getWidth(), FFP.getHeight());
 						}
 					}
-					if (!firework2.hasExploded()) {
-						g.setColor(firework2.getColor());
-						g.fillRect((int) firework2.getX(), (int) firework2.getY(), firework2.getWidth(),
-								firework2.getHeight());
-					}
-					else {
-						for (FireworkParticle fireworkParticle : firework2.fireworkParticle) {
+					if (firework2.hasExploded()) {
+						for (final FireworkParticle fireworkParticle : firework2.fireworkParticle) {
 							if (fireworkParticle != null) {
 								g.setColor(fireworkParticle.getColor());
 								g.fillRect((int) fireworkParticle.getX(), (int) fireworkParticle.getY(),
@@ -83,7 +78,13 @@ public class Fireworks extends JFrame implements Runnable {
 							}
 						}
 					}
+					else {
+						g.setColor(firework2.getColor());
+						g.fillRect((int) firework2.getX(), (int) firework2.getY(), firework2.getWidth(),
+								firework2.getHeight());
+					}
 				}
+			}
 		}
 
 		// set size of the display
@@ -98,14 +99,14 @@ public class Fireworks extends JFrame implements Runnable {
 		for (int i = 0; i < firework.length; i++)
 			if (firework[i] != null) {
 				for (int i2 = 0; i2 < firework[i].fireworkFlameParticle.length; i2++) {
-					FireworkFlameParticle FFP = firework[i].fireworkFlameParticle[i2];
+					final FireworkFlameParticle FFP = firework[i].fireworkFlameParticle[i2];
 					if (FFP != null) {
 						FFP.setX(firework[i].fireworkFlameParticle[i2].getX()
 								+ firework[i].fireworkFlameParticle[i2].getxVelocity());
 						FFP.setY(firework[i].fireworkFlameParticle[i2].getY()
 								+ firework[i].fireworkFlameParticle[i2].getyVelocity());
-						Color ffpColor = FFP.getColor();
-						int minusAlpha = (int) (Math.random() * Math.random() * 15);
+						final Color ffpColor = FFP.getColor();
+						final int minusAlpha = (int) (Math.random() * Math.random() * 15);
 						if (ffpColor.getAlpha() - minusAlpha <= 0) {
 							firework[i].fireworkFlameParticle[i2] = null;
 							continue;
@@ -115,42 +116,9 @@ public class Fireworks extends JFrame implements Runnable {
 								ffpColor.getAlpha() - minusAlpha));
 					}
 				}
-				if (!firework[i].hasExploded()) {
-					firework[i].setY(firework[i].getY() - firework[i].getyVelocity());
-					for (int i2 = 0; i2 < 2; i2++)
-						for (int i3 = 0; i3 < firework[i].fireworkFlameParticle.length; i3++)
-							if (firework[i].fireworkFlameParticle[i3] == null) {
-								int size = 1 + (int) (Math.random() * 4);
-								firework[i].fireworkFlameParticle[i3] = new FireworkFlameParticle(
-										firework[i].getX() + firework[i].getWidth() / 2 - size / 2,
-										firework[i].getY() + firework[i].getHeight(), size, size,
-										Math.random() * 0.5 - Math.random() * 0.5, new Color(
-												100 + (int) (Math.random() * 155), 25 + (int) (Math.random() * 50), 0));
-								break;
-							}
-					if (firework[i].getY() <= firework[i].getEndY()) {
-						firework[i].setExploded(true);
-						for (int i2 = 0; i2 < firework[i].fireworkParticle.length; i2++) {
-							double xVelocity = 0;
-							double yVelocity = 0;
-							if ((int) (Math.random() * 2) == 1)
-								xVelocity = 0.1 + Math.random() * Math.random() * 5;
-							else
-								xVelocity = -0.1 - Math.random() * Math.random() * 5;
-							if ((int) (Math.random() * 2) == 1)
-								yVelocity = 0.1 + Math.random() * Math.random() * 5;
-							else
-								yVelocity = -0.1 - Math.random() * Math.random() * 5;
-							int size = 1 + (int) (Math.random() * 4);
-							firework[i].fireworkParticle[i2] = new FireworkParticle(firework[i].getX(),
-									firework[i].getY(), size, size, xVelocity, yVelocity,
-									new Color((int) (Math.random() * 0xFFFFFF)));
-						}
-					}
-				}
-				else {
+				if (firework[i].hasExploded()) {
 					for (int i2 = 0; i2 < firework[i].fireworkParticle.length; i2++) {
-						FireworkParticle FP = firework[i].fireworkParticle[i2];
+						final FireworkParticle FP = firework[i].fireworkParticle[i2];
 						if (FP != null) {
 							FP.setX(FP.getX() + FP.getxVelocity());
 							FP.setY(FP.getY() + FP.getyVelocity());
@@ -160,8 +128,8 @@ public class Fireworks extends JFrame implements Runnable {
 								continue;
 							}
 							FP.setyVelocity(FP.getyVelocity() + gravity);
-							int minusAlpha = (int) (Math.random() * 5);
-							Color fwColor = FP.getColor();
+							final int minusAlpha = (int) (Math.random() * 5);
+							final Color fwColor = FP.getColor();
 							if (fwColor.getAlpha() - minusAlpha <= 0) {
 								firework[i].fireworkParticle[i2] = null;
 								continue;
@@ -171,34 +139,76 @@ public class Fireworks extends JFrame implements Runnable {
 						}
 					}
 					boolean noMoreParticles = true;
-					for (int i3 = 0; i3 < firework[i].fireworkParticle.length; i3++)
-						if (firework[i].hasExploded())
-							if (firework[i].fireworkParticle[i3] != null) {
-								noMoreParticles = false;
+					for (int i3 = 0; i3 < firework[i].fireworkParticle.length; i3++) {
+						if (firework[i].hasExploded() && firework[i].fireworkParticle[i3] != null) {
+							noMoreParticles = false;
+							break;
+						}
+					}
+					if (noMoreParticles) {
+						firework[i] = null;
+					}
+				}
+				else {
+					firework[i].setY(firework[i].getY() - firework[i].getyVelocity());
+					for (int i2 = 0; i2 < 2; i2++) {
+						for (int i3 = 0; i3 < firework[i].fireworkFlameParticle.length; i3++) {
+							if (firework[i].fireworkFlameParticle[i3] == null) {
+								final int size = 1 + (int) (Math.random() * 4);
+								firework[i].fireworkFlameParticle[i3] = new FireworkFlameParticle(
+										firework[i].getX() + firework[i].getWidth() / 2 - size / 2,
+										firework[i].getY() + firework[i].getHeight(), size, size,
+										Math.random() * 0.5 - Math.random() * 0.5, new Color(
+												100 + (int) (Math.random() * 155), 25 + (int) (Math.random() * 50), 0));
 								break;
 							}
-					if (noMoreParticles)
-						firework[i] = null;
+						}
+					}
+					if (firework[i].getY() <= firework[i].getEndY()) {
+						firework[i].setExploded(true);
+						for (int i2 = 0; i2 < firework[i].fireworkParticle.length; i2++) {
+							double xVelocity = 0;
+							double yVelocity = 0;
+							if ((int) (Math.random() * 2) == 1) {
+								xVelocity = 0.1 + Math.random() * Math.random() * 5;
+							}
+							else {
+								xVelocity = -0.1 - Math.random() * Math.random() * 5;
+							}
+							if ((int) (Math.random() * 2) == 1) {
+								yVelocity = 0.1 + Math.random() * Math.random() * 5;
+							}
+							else {
+								yVelocity = -0.1 - Math.random() * Math.random() * 5;
+							}
+							int size = 1 + (int) (Math.random() * 4);
+							firework[i].fireworkParticle[i2] = new FireworkParticle(firework[i].getX(),
+									firework[i].getY(), size, size, xVelocity, yVelocity,
+									new Color((int) (Math.random() * 0xFFFFFF)));
+						}
+					}
 				}
 			}
 	}
 
 	@Override
 	public void run() {
-		while (true)
+		while (true) {
 			try {
 				if (System.currentTimeMillis() - lastFpsSet >= 1000) {
 					lastFpsSet = System.currentTimeMillis();
 				}
 
 				// this launched 5 fireworks each round
-				for (int i = 0; i < 5; i++)
+				for (int i = 0; i < 5; i++) {
 					if (firework[i] == null) {
 						firework[i] = new Firework((int) (Math.random() * getPreferredSize().width),
 								getPreferredSize().height, 5, 20, 5, (int) (Math.random() * getPreferredSize().height),
 								new Color((int) (Math.random() * 0xFFFFFF)));
 						break;
 					}
+				}
+
 				repaint();
 				process();
 				Thread.sleep(1000 / FPS);
@@ -206,5 +216,6 @@ public class Fireworks extends JFrame implements Runnable {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 	}
 }

@@ -21,14 +21,14 @@ public class DisplayFontThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			URL fontUrl = new URL("http://www.webpagepublicity.com/" + "free-fonts/d/Digiface%20Regular.ttf");
+			final URL fontUrl = new URL("http://www.webpagepublicity.com/" + "free-fonts/d/Digiface%20Regular.ttf");
 			font = Font.createFont(Font.TRUETYPE_FONT, fontUrl.openStream());
 		}
 		catch (FontFormatException | IOException e) {
 			e.printStackTrace();
 		}
 		font = font.deriveFont(22f);
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		ge.registerFont(font);
 
 		bombsLeft.setFont(font);

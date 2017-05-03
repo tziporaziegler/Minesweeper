@@ -33,7 +33,7 @@ import javax.swing.border.BevelBorder;
 
 import fireworks.Fireworks;
 
-//import com.apple.eawt.Application;
+// import com.apple.eawt.Application;
 
 public class Board extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -42,7 +42,6 @@ public class Board extends JFrame {
 	private int numCellsToUncover;
 
 	// top panel components
-	private final JPanel topPanel;
 	private final JLabel bombsLeft;
 	private int numBombsLeft;
 	private final JButton smiley;
@@ -54,17 +53,60 @@ public class Board extends JFrame {
 	private JPanel grid;
 	private final int cols;
 	private final int rows;
-	private Cell cells[][];
+	private Cell[][] cells;
 	private Font cellFont;
 
-	private Stack<Cell> stack;
 	private ScheduledExecutorService executor;
 	private float colorNum;
 	private boolean firstClick;
 	private boolean end;
 
-	public Board(int width, int height, int rows, int cols, int numBombs, int gap) throws FontFormatException,
-			IOException {
+	// smiley action listener - resets board, timer and smiley
+	private ActionListener newGameListen = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			if (!firstClick) {
+				executor.shutdown();
+				colorNum = 0;
+				smiley.setIcon(new ImageIcon(getClass().getResource("pics/smileblue.png")));
+				amtTime = 0;
+				timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
+				updateTimer();
+				try {
+					newGame();
+				}
+				catch (FontFormatException | IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	};
+
+	// if number of flags reach amount of bombs, 000 flashed for .6 seconds
+	private Timer time = new Timer(600, new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
+		}
+	});
+
+	private Runnable timerRun = new Runnable() {
+		public void run() {
+			amtTime++;
+			updateTimer();
+		}
+	};
+
+	private Runnable timerRecolor = new Runnable() {
+		public void run() {
+			colorNum += .02;
+			timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
+			bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
+		}
+	};
+
+	public Board(int width, int height, int rows, int cols, int numBombs, int gap)
+			throws FontFormatException, IOException {
 		this.rows = rows;
 		this.cols = cols;
 		// TODO make numBobs calculate when create actual bomb
@@ -77,18 +119,18 @@ public class Board extends JFrame {
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setLayout(new BorderLayout());
-		
-		//For Window
+
+		// For Window
 		setIconImage(ImageIO.read(getClass().getResource("pics/minesweeperIcon.png")));
-		
-		//For Mac OS X
-		//Application application = Application.getApplication();
-		//Image image = Toolkit.getDefaultToolkit().getImage("pics/minesweeperIcon.png");
-		//application.setDockIconImage(image);
+
+		// For Mac OS X
+		// Application application = Application.getApplication();
+		// Image image = Toolkit.getDefaultToolkit().getImage("pics/minesweeperIcon.png");
+		// application.setDockIconImage(image);
 
 		formatter = new DecimalFormat(" 000 ");
 		colorNum = 0;
-		topPanel = new JPanel();
+		final JPanel topPanel = new JPanel();
 		bombsLeft = new JLabel();
 		timer = new JLabel();
 		smiley = new JButton();
@@ -96,10 +138,10 @@ public class Board extends JFrame {
 		add(topPanel, BorderLayout.NORTH);
 
 		// new CellFontThread().start();
-		URL fontUrl = new URL("http://www.webpagepublicity.com/free-fonts/t/Tin%20Birdhouse.ttf");
+		final URL fontUrl = new URL("http://www.webpagepublicity.com/free-fonts/t/Tin%20Birdhouse.ttf");
 		cellFont = Font.createFont(Font.TRUETYPE_FONT, fontUrl.openStream());
 		cellFont = cellFont.deriveFont(15f);
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		ge.registerFont(cellFont);
 
 		grid = new JPanel();
@@ -120,8 +162,8 @@ public class Board extends JFrame {
 		grid.setBackground(Color.LIGHT_GRAY);
 		cells = new Cell[cols][rows];
 
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		for (int i = 0; i < (numCells); i++) {
+		final ArrayList<Integer> list = new ArrayList<Integer>();
+		for (int i = 0; i < numCells; i++) {
 			list.add(i);
 		}
 		Collections.shuffle(list);
@@ -136,7 +178,7 @@ public class Board extends JFrame {
 				else {
 					cells[col][row] = new Cell(false, row, col, cellFont);
 				}
-				Cell cell = cells[col][row];
+				final Cell cell = cells[col][row];
 
 				cell.addMouseListener(new MouseAdapter() {
 					@Override
@@ -152,8 +194,9 @@ public class Board extends JFrame {
 						int row1 = cell.getRow();
 						int col1 = cell.getCol();
 						if (firstClick) {
-							boolean newG = true;
-							while (newG == true) {
+
+							boolean newG;
+							do {
 								newG = false;
 								// reset board as long as first click is a bomb so that never get
 								// out on first turn
@@ -171,13 +214,18 @@ public class Board extends JFrame {
 									}
 									cell = cells[col1][row1];
 								}
-							}
+							} while (newG);
+
 							resetTimer();
 							firstClick = false;
 						}
 						if (!cell.isUnlocked()) {
 							if (SwingUtilities.isRightMouseButton(e)) {
-								if (!cell.isFlagged()) {
+								if (cell.isFlagged()) {
+									cell.unflag();
+									updateBombsLeft(++numBombsLeft);
+								}
+								else {
 									if (numBombsLeft > 0) {
 										cell.flag();
 										updateBombsLeft(--numBombsLeft);
@@ -187,10 +235,6 @@ public class Board extends JFrame {
 										bombsLeft.setForeground(Color.YELLOW);
 									}
 								}
-								else {
-									cell.unflag();
-									updateBombsLeft(++numBombsLeft);
-								}
 							}
 							else {
 								if (!cell.isFlagged()) {
@@ -199,7 +243,7 @@ public class Board extends JFrame {
 										looseGame();
 									}
 									else {
-										int numNeighbors = cell.getNumBombNeighbors();
+										final int numNeighbors = cell.getNumBombNeighbors();
 										if (numNeighbors == 0) {
 											unlockNeighbors(cell);
 										}
@@ -215,8 +259,8 @@ public class Board extends JFrame {
 							}
 						}
 						else if (SwingUtilities.isRightMouseButton(e) && SwingUtilities.isLeftMouseButton(e)) {
-							int row = cell.getRow();
-							int col = cell.getCol();
+							final int row = cell.getRow();
+							final int col = cell.getCol();
 
 							if (getNumFlagNeighbors(col, row) == cell.getNumBombNeighbors()) {
 								unlockNeighbors(cell);
@@ -266,35 +310,6 @@ public class Board extends JFrame {
 		repaint();
 	}
 
-	// smiley action listener - resets board, timer and smiley
-	ActionListener newGameListen = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent event) {
-			if (!firstClick) {
-				executor.shutdown();
-				colorNum = 0;
-				smiley.setIcon(new ImageIcon(getClass().getResource("pics/smileblue.png")));
-				amtTime = 0;
-				timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
-				updateTimer();
-				try {
-					newGame();
-				}
-				catch (FontFormatException | IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	};
-
-	// if number of flags reach amount of bombs, 000 flashed for .6 seconds
-	private Timer time = new Timer(600, new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
-		}
-	});
-
 	// create timer
 	private void resetTimer() {
 		amtTime = 0;
@@ -303,21 +318,6 @@ public class Board extends JFrame {
 		executor.scheduleAtFixedRate(timerRun, 0, 1, TimeUnit.SECONDS);
 		executor.scheduleAtFixedRate(timerRecolor, 0, 10, TimeUnit.SECONDS);
 	}
-
-	private Runnable timerRun = new Runnable() {
-		public void run() {
-			amtTime++;
-			updateTimer();
-		}
-	};
-
-	private Runnable timerRecolor = new Runnable() {
-		public void run() {
-			colorNum += .02;
-			timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
-			bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
-		}
-	};
 
 	private void updateBombsLeft(int numBombs) {
 		bombsLeft.setText(formatter.format(numBombs));
@@ -332,10 +332,11 @@ public class Board extends JFrame {
 		// go to each neighbor and check if bomb
 		for (int k = -1; k < 2; k++) {
 			for (int m = -1; m < 2; m++) {
-				if (k == 0 && m == 0) {
-					// skip center box
-				}
-				else if (isBomb(i + k, j + m)) {
+
+				// skip center box
+				boolean centerBox = k == 0 && m == 0;
+
+				if (!centerBox && isBomb(i + k, j + m)) {
 					numBombs++;
 				}
 			}
@@ -378,23 +379,22 @@ public class Board extends JFrame {
 	}
 
 	private void unlockNeighbors(Cell currentCell) {
-		stack = new Stack<Cell>();
+		Stack<Cell> stack = new Stack<Cell>();
 		stack.push(currentCell);
 		while (!stack.isEmpty()) {
-			Cell cell = stack.pop();
-			int row = cell.getCol();
-			int col = cell.getRow();
+			final Cell cell = stack.pop();
+			final int row = cell.getCol();
+			final int col = cell.getRow();
 			cell.unlock();
 
 			// check all neighbors
 			for (int i = -1; i < 2; i++) {
 				for (int j = -1; j < 2; j++) {
 					if (isCell(row + i, col + j)) {
-						if (i == 0 && j == 0) {
-							// skip center box
-						}
-						else {
-							Cell thisCell = cells[row + i][col + j];
+
+						// skip center box
+						if (i != 0 || j != 0) {
+							final Cell thisCell = cells[row + i][col + j];
 
 							// the following check is only for flag unlock and not 0 unlock
 							if (thisCell.isBomb() && !thisCell.isFlagged()) {
@@ -423,7 +423,7 @@ public class Board extends JFrame {
 					// skip center box
 				}
 				else if (isCell(col + k, row + m)) {
-					Cell cell = cells[col + k][row + m];
+					final Cell cell = cells[col + k][row + m];
 					if (!cell.isUnlocked() && !cell.isFlagged()) {
 						cell.depress();
 					}
@@ -435,7 +435,7 @@ public class Board extends JFrame {
 	private boolean isCell(int row, int col) {
 		try {
 			@SuppressWarnings("unused")
-			Cell cell = cells[row][col];
+			final Cell cell = cells[row][col];
 			return true;
 		}
 		catch (Exception e) {
@@ -451,14 +451,15 @@ public class Board extends JFrame {
 	private void looseGame() {
 		endGame();
 		updateBombsLeft(numBombsLeft);
-		for (Cell[] cellRow : cells) {
-			for (Cell cell : cellRow) {
+
+		for (final Cell[] cellRow : cells) {
+			for (final Cell cell : cellRow) {
 				if (cell.isFlagged()) {
-					if (!cell.isBomb()) {
-						cell.wrongify();
+					if (cell.isBomb()) {
+						cell.setIsUnlocked(true);
 					}
 					else {
-						cell.setIsUnlocked(true);
+						cell.wrongify();
 					}
 				}
 				else if (!cell.isUnlocked()) {
@@ -481,13 +482,17 @@ public class Board extends JFrame {
 		for (Cell[] cellRow : cells) {
 			for (Cell cell : cellRow) {
 				if (!cell.isUnlocked()) {
+
 					cell.setIsUnlocked(true);
+
 					if (cell.isBomb()) {
 						cell.flag();
 					}
+
 				}
 			}
 		}
+
 		smiley.setIcon(new ImageIcon(getClass().getResource("pics/smilewin.png")));
 		new Fireworks();
 	}

@@ -18,9 +18,6 @@ import javax.swing.border.Border;
 
 public class Minesweeper extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private final JButton beginner;
-	private final JButton intermediate;
-	private final JButton expert;
 
 	public Minesweeper() {
 		setSize(150, 125);
@@ -32,10 +29,10 @@ public class Minesweeper extends JFrame {
 
 		// TODO read in high score from serialized file based on level choose
 		// at end compare numbers, reset if new HS member, and save new file
-		beginner = new JButton("BEGINNER");
+		final JButton beginner = new JButton("BEGINNER");
 		beginner.setBackground(Color.decode("#5CE62E"));
 		addMouse(beginner);
-		ActionListener beginListen = new ActionListener() {
+		final ActionListener beginListen = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
@@ -51,10 +48,10 @@ public class Minesweeper extends JFrame {
 		beginner.addActionListener(beginListen);
 		add(beginner);
 
-		intermediate = new JButton("INTERMEDIATE");
+		final JButton intermediate = new JButton("INTERMEDIATE");
 		intermediate.setBackground(Color.decode("#FFD633"));
 		addMouse(intermediate);
-		ActionListener interListen = new ActionListener() {
+		final ActionListener interListen = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
@@ -69,10 +66,10 @@ public class Minesweeper extends JFrame {
 		intermediate.addActionListener(interListen);
 		add(intermediate);
 
-		expert = new JButton("EXPERT");
+		final JButton expert = new JButton("EXPERT");
 		expert.setBackground(Color.decode("#FF2A2A"));
 		addMouse(expert);
-		ActionListener expertListen = new ActionListener() {
+		final ActionListener expertListen = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
@@ -94,7 +91,7 @@ public class Minesweeper extends JFrame {
 	}
 
 	public void addMouse(JButton button) {
-		Border border = new BevelBorder(BevelBorder.RAISED);
+		final Border border = new BevelBorder(BevelBorder.RAISED);
 
 		button.addMouseListener(new MouseAdapter() {
 			@Override

@@ -3,6 +3,9 @@ package fireworks;
 import java.awt.Color;
 
 public class Firework implements Particle {
+	public FireworkParticle[] fireworkParticle;
+	public FireworkFlameParticle[] fireworkFlameParticle;
+
 	private double x;
 	private double y;
 	private int width;
@@ -12,8 +15,6 @@ public class Firework implements Particle {
 	private int endY;
 	private Color color;
 	private boolean exploded;
-	public FireworkParticle[] fireworkParticle;
-	public FireworkFlameParticle[] fireworkFlameParticle;
 
 	public Firework(double x, double y, int width, int height, double yVelocity, int endY, Color color) {
 		this.x = x;

@@ -22,6 +22,15 @@ public class Cell extends JButton {
 	private final int col;
 	private int numBombNeighbors;
 
+	private Timer time = new Timer(300, new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (!flagged && !unlocked) {
+				setBorder(new BevelBorder(BevelBorder.RAISED));
+			}
+		}
+	});
+
 	public Cell(boolean isBomb, int row, int col, Font font) throws FontFormatException, IOException {
 		setBackground(Color.LIGHT_GRAY);
 		setFont(font);
@@ -106,15 +115,6 @@ public class Cell extends JButton {
 		setBorder(new MatteBorder(1, 0, 0, 1, Color.GRAY));
 		time.start();
 	}
-
-	Timer time = new Timer(300, new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (!flagged && !unlocked) {
-				setBorder(new BevelBorder(BevelBorder.RAISED));
-			}
-		}
-	});
 
 	public boolean isBomb() {
 		return isBomb;
