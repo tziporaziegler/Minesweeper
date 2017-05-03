@@ -419,10 +419,9 @@ public class Board extends JFrame {
 		// go to each neighbor
 		for (int k = -1; k < 2; k++) {
 			for (int m = -1; m < 2; m++) {
-				if (k == 0 && m == 0) {
-					// skip center box
-				}
-				else if (isCell(col + k, row + m)) {
+
+				// k != 0 || m != 0 - skip center box
+				if (isCell(col + k, row + m) && (k != 0 || m != 0)) {
 					final Cell cell = cells[col + k][row + m];
 					if (!cell.isUnlocked() && !cell.isFlagged()) {
 						cell.depress();
