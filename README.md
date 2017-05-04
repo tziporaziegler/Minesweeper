@@ -1,3 +1,4 @@
+[![GitHub release](https://img.shields.io/github/release/tziporaziegler/minesweeper.svg)][3]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2e3173ec6ec641f898fc93486d3e2043)](https://www.codacy.com/app/tziporaziegler/Minesweeper?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tziporaziegler/Minesweeper&amp;utm_campaign=Badge_Grade)
 [![Code Climate](https://codeclimate.com/github/tziporaziegler/Minesweeper/badges/gpa.svg)](https://codeclimate.com/github/tziporaziegler/Minesweeper)
 
@@ -34,5 +35,12 @@ You can start a new game at any point by clicking on the smiley face button.
 
 Happy mine hunting!
 
+Downloading
+----
+Runable `.jar` files for Mac and Windows are available for download in the [latest release][3].
+
+To download or clone a complete copy of the source code, use Git or checkout with SVN using `https://github.com/tziporaziegler/Minesweeper.git` web URL. A `.zip` and `tar.gz` file are also available in the latest realease.
+
 [1]:https://en.wikipedia.org/wiki/Microsoft_Minesweeper
 [2]:https://github.com/tziporaziegler/Minesweeper/blob/master/screenshots/ExpWin256.png
+[3]:https://github.com/tziporaziegler/Minesweeper/releases/latest
