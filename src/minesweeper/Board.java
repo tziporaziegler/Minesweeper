@@ -358,10 +358,10 @@ public class Board extends JFrame {
 	private int getNumFlagNeighbors(int i, int j) {
 		int counter = 0;
 
-		int startK = i > 0 ? -1 : 0;
-		int endK = i < cols - 1 ? 2 : 1;
-		int startM = j > 0 ? -1 : 0;
-		int endM = j < rows - 1 ? 2 : 1;
+		final int startK = i > 0 ? -1 : 0;
+		final int endK = i < cols - 1 ? 2 : 1;
+		final int startM = j > 0 ? -1 : 0;
+		final int endM = j < rows - 1 ? 2 : 1;
 
 		// go to each neighbor and check if flagged
 		for (int k = startK; k < endK; k++) {
@@ -383,10 +383,10 @@ public class Board extends JFrame {
 	private int getNumBombNeighbors(int i, int j) {
 		int counter = 0;
 
-		int startK = i > 0 ? -1 : 0;
-		int endK = i < cols - 1 ? 2 : 1;
-		int startM = j > 0 ? -1 : 0;
-		int endM = j < rows - 1 ? 2 : 1;
+		final int startK = i > 0 ? -1 : 0;
+		final int endK = i < cols - 1 ? 2 : 1;
+		final int startM = j > 0 ? -1 : 0;
+		final int endM = j < rows - 1 ? 2 : 1;
 
 		// go to each neighbor and check if flagged
 		for (int k = startK; k < endK; k++) {
