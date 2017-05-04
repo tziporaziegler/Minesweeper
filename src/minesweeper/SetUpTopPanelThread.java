@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,6 +11,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 public class SetUpTopPanelThread extends Thread {
+	private static final BevelBorder DISPLAY_BORDER = new BevelBorder(BevelBorder.LOWERED, Color.GRAY, Color.GRAY);
 
 	private JPanel topPanel;
 	private JLabel bombsLeft;
@@ -34,6 +34,7 @@ public class SetUpTopPanelThread extends Thread {
 
 	@Override
 	public void run() {
+		// TODO test if gap is good on windows
 		topPanel.setLayout(new FlowLayout(FlowLayout.CENTER, gap, 3));
 		// add breaks - empty spaces in flow layout
 		// topPanel.setLayout(new GridLayout(1, 7));
@@ -44,27 +45,26 @@ public class SetUpTopPanelThread extends Thread {
 		new DisplayFontThread(bombsLeft, timer).start();
 
 		// create bombs left display
-		bombsLeft.setBackground(Color.BLACK);
-		bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
-		bombsLeft.setOpaque(true);
-		bombsLeft.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.GRAY, Color.GRAY));
-		bombsLeft.setHorizontalAlignment(JLabel.CENTER);
-		topPanel.add(bombsLeft);
+		addDisplay(bombsLeft);
 
 		// create smiley display
 		// TODO add picture of pressed smiley that will display while smiley is pressed
-		smiley.setIcon(new ImageIcon(getClass().getResource("pics/smileblue.png")));
+		smiley.setIcon(Board.SMILEY_PLAY);
 		smiley.setBackground(null);
 		smiley.setBorder(new EmptyBorder(0, 0, 0, 0));
 		smiley.addActionListener(newGameListen);
 		topPanel.add(smiley);
 
 		// create timer display
-		timer.setBackground(Color.BLACK);
-		timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
-		timer.setOpaque(true);
-		timer.setBorder(new BevelBorder(BevelBorder.LOWERED, Color.GRAY, Color.GRAY));
-		timer.setHorizontalAlignment(JLabel.CENTER);
-		topPanel.add(timer);
+		addDisplay(timer);
+	}
+
+	private void addDisplay(JLabel label) {
+		label.setBackground(Color.BLACK);
+		label.setForeground(Color.getHSBColor(colorNum, 1, 1));
+		label.setOpaque(true);
+		label.setBorder(DISPLAY_BORDER);
+		label.setHorizontalAlignment(JLabel.CENTER);
+		topPanel.add(label);
 	}
 }

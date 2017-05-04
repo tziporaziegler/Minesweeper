@@ -2,10 +2,8 @@ package minesweeper;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -15,6 +13,14 @@ import javax.swing.border.MatteBorder;
 
 public class Cell extends JButton {
 	private static final long serialVersionUID = 1L;
+
+	private static final MatteBorder UNLOCKED_BORDER = new MatteBorder(1, 0, 0, 1, Color.GRAY);
+
+	private static final ImageIcon MINE_PIC = new ImageIcon(Cell.class.getResource("pics/mine.png"));
+	private static final ImageIcon HIT_MINE_PIC = new ImageIcon(Cell.class.getResource("pics/hitmine.gif"));
+	private static final ImageIcon WRONG_MINE_PIC = new ImageIcon(Cell.class.getResource("pics/wrongmine.png"));
+	private static final ImageIcon FLAG_PIC = new ImageIcon(Cell.class.getResource("pics/flag.png"));
+
 	private final boolean isBomb;
 	private boolean flagged;
 	private boolean unlocked;
@@ -31,7 +37,7 @@ public class Cell extends JButton {
 		}
 	});
 
-	public Cell(boolean isBomb, int row, int col, Font font) throws FontFormatException, IOException {
+	public Cell(boolean isBomb, int row, int col, Font font) {
 		setBackground(Color.LIGHT_GRAY);
 		setFont(font);
 		// setFont(new Font("Acens", Font.BOLD, 15));
@@ -45,10 +51,12 @@ public class Cell extends JButton {
 	}
 
 	public void unlock() {
-		setBorder(new MatteBorder(1, 0, 0, 1, Color.GRAY));
+		unlocked = true;
+		setBorder(UNLOCKED_BORDER);
+
 		switch (numBombNeighbors) {
 			case 0:
-				break;
+				return;
 			case 1:
 				setForeground(Color.BLUE);
 				break;
@@ -75,14 +83,11 @@ public class Cell extends JButton {
 				break;
 		}
 
-		if (numBombNeighbors != 0) {
-			setText(String.valueOf(numBombNeighbors));
-		}
-		unlocked = true;
+		setText(String.valueOf(numBombNeighbors));
 	}
 
 	public void flag() {
-		setIcon(new ImageIcon(getClass().getResource("pics/flag.png")));
+		setIcon(FLAG_PIC);
 		flagged = true;
 	}
 
@@ -92,27 +97,27 @@ public class Cell extends JButton {
 	}
 
 	public void explode() {
-		setBorder(new MatteBorder(1, 0, 0, 1, Color.GRAY));
-		setIcon(new ImageIcon(getClass().getResource("pics/mine.png")));
+		setBorder(UNLOCKED_BORDER);
+		setIcon(MINE_PIC);
 		unlocked = true;
 	}
 
 	public void clickExplode() {
-		// FIXME red bomb disapears when hover over
-		setBorder(new MatteBorder(1, 0, 0, 1, Color.GRAY));
-		setIcon(new ImageIcon(getClass().getResource("pics/hitmine.gif")));
+		// FIXME red bomb disappears when hover over
+		setBorder(UNLOCKED_BORDER);
+		setIcon(HIT_MINE_PIC);
 		setBackground(Color.RED);
 		unlocked = true;
 	}
 
 	public void wrongify() {
-		setBorder(new MatteBorder(1, 0, 0, 1, Color.GRAY));
-		setIcon(new ImageIcon(getClass().getResource("pics/wrongmine.png")));
+		setBorder(UNLOCKED_BORDER);
+		setIcon(WRONG_MINE_PIC);
 		unlocked = true;
 	}
 
 	public void depress() {
-		setBorder(new MatteBorder(1, 0, 0, 1, Color.GRAY));
+		setBorder(UNLOCKED_BORDER);
 		time.start();
 	}
 
@@ -144,7 +149,7 @@ public class Cell extends JButton {
 		this.numBombNeighbors = numBombNeighbors;
 	}
 
-	public void setIsUnlocked(boolean b) {
-		unlocked = b;
+	public void setIsUnlocked(boolean isUnlocked) {
+		unlocked = isUnlocked;
 	}
 }
