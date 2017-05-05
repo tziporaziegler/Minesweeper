@@ -14,12 +14,14 @@ import javax.swing.border.MatteBorder;
 public class Cell extends JButton {
 	private static final long serialVersionUID = 1L;
 
+	private static final BevelBorder LOCKED_BORDER = new BevelBorder(BevelBorder.RAISED);
 	private static final MatteBorder UNLOCKED_BORDER = new MatteBorder(1, 0, 0, 1, Color.GRAY);
 
 	private static final ImageIcon MINE_PIC = new ImageIcon(Cell.class.getResource("pics/mine.png"));
 	private static final ImageIcon HIT_MINE_PIC = new ImageIcon(Cell.class.getResource("pics/hitmine.gif"));
 	private static final ImageIcon WRONG_MINE_PIC = new ImageIcon(Cell.class.getResource("pics/wrongmine.png"));
-	private static final ImageIcon FLAG_PIC = new ImageIcon(Cell.class.getResource("pics/flag.png"));
+	private static final ImageIcon FLAGGED_CELL = new ImageIcon(Cell.class.getResource("pics/flag.png"));
+	private static final ImageIcon UNFLAGGED_CELL = new ImageIcon(Cell.class.getResource(""));
 
 	private final boolean isBomb;
 	private boolean flagged;
@@ -42,7 +44,7 @@ public class Cell extends JButton {
 		setFont(font);
 		// setFont(new Font("Acens", Font.BOLD, 15));
 
-		setBorder(new BevelBorder(BevelBorder.RAISED));
+		setBorder(LOCKED_BORDER);
 		unlocked = false;
 		flagged = false;
 		this.isBomb = isBomb;
@@ -87,12 +89,12 @@ public class Cell extends JButton {
 	}
 
 	public void flag() {
-		setIcon(FLAG_PIC);
+		setIcon(FLAGGED_CELL);
 		flagged = true;
 	}
 
 	public void unflag() {
-		setIcon(new ImageIcon(getClass().getResource("")));
+		setIcon(UNFLAGGED_CELL);
 		flagged = false;
 	}
 

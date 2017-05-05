@@ -12,49 +12,23 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 
 import fireworks.Fireworks;
 
-// import com.apple.eawt.Application;
-
 public class Board extends JFrame {
 	private static final long serialVersionUID = 1L;
-
-	private static final Format DISPLAY_FORMATTER = new DecimalFormat(" 000 ");
-
-	public static final ImageIcon SMILEY_PLAY = new ImageIcon(Board.class.getResource("pics/smileblue.png"));
-	private static final ImageIcon SMILEY_GUESS = new ImageIcon(Board.class.getResource("pics/smileguessblue.png"));
-	private static final ImageIcon SMILEY_DEAD = new ImageIcon(Board.class.getResource("pics/smiledead.png"));
-	private static final ImageIcon SMILEY_WIN = new ImageIcon(Board.class.getResource("pics/smilewin.png"));
 
 	private final int numBombs;
 	private final int numCells;
 	private int numCellsToUncover;
-
-	// top panel components
-	private final JLabel bombsLeft;
-	private int numBombsLeft;
-	private final JButton smiley;
-	private final JLabel timer;
-	private int amtTime;
 
 	// grid components - new to store variables to start new game
 	private JPanel grid;
@@ -63,136 +37,48 @@ public class Board extends JFrame {
 	private Cell[][] cells;
 	private Font cellFont;
 
-	private ScheduledExecutorService executor;
-	private float colorNum;
-	private boolean firstClick;
-	private boolean end;
+	private boolean gameOver = false;
+	private boolean firstClick = true;
 
-	// smiley action listener - resets board, timer and smiley
-	private ActionListener newGameListen = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent event) {
-			if (!firstClick) {
-				executor.shutdown();
-				colorNum = 0;
-				smiley.setIcon(new ImageIcon(getClass().getResource("pics/smileblue.png")));
-				amtTime = 0;
-				timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
-				updateTimer();
-				try {
-					newGame();
-				}
-				catch (FontFormatException | IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	};
-
-	// if number of flags reach amount of bombs, 000 flashed for .6 seconds
-	private Timer time = new Timer(600, new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
-		}
-	});
+	private TopPanel topPanel;
 
 	private MouseAdapter cellMouseAdapter = new MouseAdapter() {
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (!end) {
-				smiley.setIcon(SMILEY_GUESS);
+			if (gameOver) {
+				return;
 			}
+
+			topPanel.guessSmiley();
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			Cell cell = (Cell) e.getSource();
-			int row1 = cell.getRow();
-			int col1 = cell.getCol();
-			if (firstClick) {
-
-				boolean newG;
-				do {
-					newG = false;
-					// reset board as long as first click is a bomb so that never get
-					// out on first turn
-					if (cell.isBomb()) {
-						row1 = cell.getRow();
-						col1 = cell.getCol();
-						// new game (actionListener and method)
-						// cannot flag before click at least one box
-						newG = true;
-						try {
-							newGame();
-						}
-						catch (FontFormatException | IOException e1) {
-							e1.printStackTrace();
-						}
-						cell = cells[col1][row1];
-					}
-				} while (newG);
-
-				resetTimer();
-				firstClick = false;
+			if (gameOver) {
+				return;
 			}
-			if (!cell.isUnlocked()) {
+
+			topPanel.resetSmiley();
+
+			Cell cell = (Cell) e.getSource();
+
+			if (firstClick) {
+				firstClick(cell);
+			}
+
+			if (cell.isUnlocked()) {
+				if (SwingUtilities.isRightMouseButton(e) && SwingUtilities.isLeftMouseButton(e)) {
+					rightAndLeftClick(cell);
+				}
+			}
+			else {
 				if (SwingUtilities.isRightMouseButton(e)) {
-					if (cell.isFlagged()) {
-						cell.unflag();
-						updateBombsLeft(++numBombsLeft);
-					}
-					else {
-						if (numBombsLeft > 0) {
-							cell.flag();
-							updateBombsLeft(--numBombsLeft);
-						}
-						else {
-							time.start();
-							bombsLeft.setForeground(Color.YELLOW);
-						}
-					}
+					rightClick(cell);
 				}
 				else {
-					if (!cell.isFlagged()) {
-						if (cell.isBomb()) {
-							cell.clickExplode();
-							looseGame();
-						}
-						else {
-							final int numNeighbors = cell.getNumBombNeighbors();
-							if (numNeighbors == 0) {
-								unlockNeighbors(cell);
-							}
-							else {
-								cell.unlock();
-							}
-							numCellsToUncover--;
-							if (numCellsToUncover == 0) {
-								winGame();
-							}
-						}
-					}
+					leftClick(cell);
 				}
 			}
-			else if (SwingUtilities.isRightMouseButton(e) && SwingUtilities.isLeftMouseButton(e)) {
-				final int row = cell.getRow();
-				final int col = cell.getCol();
-
-				if (getNumFlagNeighbors(col, row) == cell.getNumBombNeighbors()) {
-					unlockNeighbors(cell);
-					if (numCellsToUncover == 0) {
-						winGame();
-					}
-				}
-				else if (!end) {
-					depressNeighbors(col, row);
-				}
-			}
-			if (!end) {
-				smiley.setIcon(SMILEY_PLAY);
-			}
-
 		}
 	};
 
@@ -209,36 +95,28 @@ public class Board extends JFrame {
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setLayout(new BorderLayout());
+		ApplicationUtils.setApplicationIcon(this);
 
-		// For Window
-		try {
-			setIconImage(ImageIO.read(getClass().getResource("pics/minesweeperIcon.png")));
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// For Mac OS X
-		// Application application = Application.getApplication();
-		// Image image = Toolkit.getDefaultToolkit().getImage("pics/minesweeperIcon.png");
-		// application.setDockIconImage(image);
-
-		colorNum = 0;
-		final JPanel topPanel = new JPanel();
-		bombsLeft = new JLabel();
-		timer = new JLabel();
-		smiley = new JButton();
-		new SetUpTopPanelThread(topPanel, bombsLeft, timer, smiley, newGameListen, colorNum, gap).start();
-		add(topPanel, BorderLayout.NORTH);
-
-		setCellFont();
+		initializeTopPanel(gap);
 		initializeGrid();
 
-		amtTime = 0;
-		updateTimer();
-		updateBombsLeft(numBombsLeft);
-
 		setVisible(true);
+	}
+
+	private void initializeTopPanel(int gap) {
+		ActionListener newGameListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				gameOver = false;
+				firstClick = true;
+				refreshCells();
+				topPanel.reset();
+				repaint();
+			}
+		};
+
+		topPanel = new TopPanel(numBombs, gap, newGameListener);
+		add(topPanel, BorderLayout.NORTH);
 	}
 
 	private void setCellFont() {
@@ -255,6 +133,8 @@ public class Board extends JFrame {
 	}
 
 	private void initializeGrid() {
+		setCellFont();
+
 		grid = new JPanel();
 
 		grid.setLayout(new GridLayout(cols, rows));
@@ -267,10 +147,6 @@ public class Board extends JFrame {
 	}
 
 	private void refreshCells() {
-		end = false;
-		firstClick = true;
-
-		numBombsLeft = numBombs;
 		numCellsToUncover = numCells - numBombs;
 
 		grid.removeAll();
@@ -307,52 +183,85 @@ public class Board extends JFrame {
 		for (int col = 0; col < cols; col++) {
 			for (int row = 0; row < rows; row++) {
 				final Cell cell = cells[col][row];
-				if (cell.isBomb()) {
-					numBombsLeft++;
-				}
-				else {
+				if (!cell.isBomb()) {
 					cell.setNumBombNeighbors(getNumBombNeighbors(col, row));
 				}
 			}
 		}
 	}
 
-	private void newGame() throws FontFormatException, IOException {
-		refreshCells();
+	private void firstClick(Cell cell) {
+		final int row = cell.getRow();
+		final int col = cell.getCol();
 
-		bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
-		updateBombsLeft(numBombsLeft);
-		repaint();
-	}
+		do {
+			firstClick = false;
 
-	// create timer
-	private void resetTimer() {
-		amtTime = 0;
-		updateTimer();
-		executor = Executors.newScheduledThreadPool(1);
-
-		executor.scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				amtTime++;
-				updateTimer();
+			// reset board as long as first click is a bomb so that never get out on first turn
+			if (cell.isBomb()) {
+				// new game (actionListener and method)
+				// cannot flag before click at least one box
+				firstClick = true;
+				refreshCells();
+				cell = cells[col][row];
 			}
-		}, 0, 1, TimeUnit.SECONDS);
 
-		executor.scheduleAtFixedRate(new Runnable() {
-			public void run() {
-				colorNum += .02;
-				timer.setForeground(Color.getHSBColor(colorNum, 1, 1));
-				bombsLeft.setForeground(Color.getHSBColor(colorNum, 1, 1));
+		} while (firstClick);
+
+		topPanel.startTime();
+	}
+
+	private void rightClick(Cell cell) {
+		if (cell.isFlagged()) {
+			cell.unflag();
+			topPanel.incrementBombs();
+		}
+		else {
+			try {
+				topPanel.decrementBombs();
+				cell.flag();
 			}
-		}, 0, 10, TimeUnit.SECONDS);
+			catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 
-	private void updateBombsLeft(int numBombs) {
-		bombsLeft.setText(DISPLAY_FORMATTER.format(numBombs));
+	private void leftClick(Cell cell) {
+		if (!cell.isFlagged()) {
+			if (cell.isBomb()) {
+				cell.clickExplode();
+				looseGame();
+			}
+			else {
+				final int numNeighbors = cell.getNumBombNeighbors();
+				if (numNeighbors == 0) {
+					unlockNeighbors(cell);
+				}
+				else {
+					cell.unlock();
+				}
+				numCellsToUncover--;
+				if (numCellsToUncover == 0) {
+					winGame();
+				}
+			}
+		}
 	}
 
-	private void updateTimer() {
-		timer.setText(DISPLAY_FORMATTER.format(amtTime));
+	private void rightAndLeftClick(Cell cell) {
+		final int row = cell.getRow();
+		final int col = cell.getCol();
+
+		if (getNumFlagNeighbors(col, row) == cell.getNumBombNeighbors()) {
+			unlockNeighbors(cell);
+			if (numCellsToUncover == 0) {
+				winGame();
+			}
+		}
+		else {
+			depressNeighbors(col, row);
+		}
 	}
 
 	private int getNumFlagNeighbors(int i, int j) {
@@ -419,7 +328,7 @@ public class Board extends JFrame {
 				for (int j = -1; j < 2; j++) {
 
 					// i != 0 || j != 0 - skip center box
-                    if (isCell(row + i, col + j) && (i != 0 || j != 0)) {
+					if (isCell(row + i, col + j) && (i != 0 || j != 0)) {
 
 						final Cell thisCell = cells[row + i][col + j];
 
@@ -462,13 +371,14 @@ public class Board extends JFrame {
 	}
 
 	private void endGame() {
-		end = true;
-		executor.shutdown();
+		gameOver = true;
+		topPanel.shutDownTime();
 	}
 
 	private void looseGame() {
 		endGame();
-		updateBombsLeft(numBombsLeft);
+
+		topPanel.triggerDie();
 
 		for (final Cell[] cellRow : cells) {
 			for (final Cell cell : cellRow) {
@@ -491,12 +401,13 @@ public class Board extends JFrame {
 
 			}
 		}
-		smiley.setIcon(SMILEY_DEAD);
 	}
 
 	private void winGame() {
 		endGame();
-		updateBombsLeft(0);
+
+		topPanel.triggerWin();
+
 		for (final Cell[] cellRow : cells) {
 			for (final Cell cell : cellRow) {
 				if (!cell.isUnlocked()) {
@@ -511,7 +422,6 @@ public class Board extends JFrame {
 			}
 		}
 
-		smiley.setIcon(SMILEY_WIN);
 		new Fireworks();
 	}
 }

@@ -29,6 +29,7 @@ public class Minesweeper extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setResizable(false);
+		ApplicationUtils.setApplicationIcon(this);
 
 		// TODO read in high score from serialized file based on level choose
 		// at end compare numbers, reset if new HS member, and save new file
@@ -70,7 +71,7 @@ public class Minesweeper extends JFrame {
 	private void addButton(String name, String color, int boardHeight, int boardWidth, int boardRows, int boardCols,
 			int boardNumBombs, int boardGap) {
 		// create a new start button
-		JButton button = new JButton(name);
+		final JButton button = new JButton(name);
 
 		// set button background color
 		button.setBackground(Color.decode(color));
@@ -88,7 +89,7 @@ public class Minesweeper extends JFrame {
 			}
 		});
 
-		// add the start button to the Mineweeper JFrame
+		// add the start button to the Minesweeper JFrame
 		add(button);
 
 		numberOfButtons++;
