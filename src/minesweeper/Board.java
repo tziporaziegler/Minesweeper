@@ -63,7 +63,7 @@ public class Board extends JFrame {
 			Cell cell = (Cell) e.getSource();
 
 			if (firstClick) {
-				firstClick(cell);
+				cell = firstClick(cell);
 			}
 
 			if (cell.isUnlocked()) {
@@ -104,14 +104,16 @@ public class Board extends JFrame {
 	}
 
 	private void initializeTopPanel(int gap) {
-		ActionListener newGameListener = new ActionListener() {
+		final ActionListener newGameListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				gameOver = false;
-				firstClick = true;
-				refreshCells();
-				topPanel.reset();
-				repaint();
+				if (!firstClick) {
+					firstClick = true;
+					gameOver = false;
+					refreshCells();
+					topPanel.reset();
+					repaint();
+				}
 			}
 		};
 
@@ -159,19 +161,11 @@ public class Board extends JFrame {
 		}
 		Collections.shuffle(list);
 
-		// FIXME check if mixed up col and row
 		int position = 0;
 		for (int col = 0; col < cols; col++) {
 			for (int row = 0; row < rows; row++) {
-				if (list.get(position) < numBombs) {
-					cells[col][row] = new Cell(true, row, col, cellFont);
-				}
-				else {
-					cells[col][row] = new Cell(false, row, col, cellFont);
-				}
-				final Cell cell = cells[col][row];
-
-				cell.addMouseListener(cellMouseAdapter);
+				final Cell cell = new Cell(list.get(position) < numBombs, row, col, cellFont, cellMouseAdapter);
+				cells[col][row] = cell;
 
 				grid.add(cell);
 				position++;
@@ -190,7 +184,7 @@ public class Board extends JFrame {
 		}
 	}
 
-	private void firstClick(Cell cell) {
+	private Cell firstClick(Cell cell) {
 		final int row = cell.getRow();
 		final int col = cell.getCol();
 
@@ -209,6 +203,8 @@ public class Board extends JFrame {
 		} while (firstClick);
 
 		topPanel.startTime();
+
+		return cell;
 	}
 
 	private void rightClick(Cell cell) {

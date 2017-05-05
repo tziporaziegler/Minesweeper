@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -39,12 +40,14 @@ public class Cell extends JButton {
 		}
 	});
 
-	public Cell(boolean isBomb, int row, int col, Font font) {
+	public Cell(boolean isBomb, int row, int col, Font font, MouseAdapter cellMouseAdapter) {
 		setBackground(Color.LIGHT_GRAY);
 		setFont(font);
 		// setFont(new Font("Acens", Font.BOLD, 15));
 
 		setBorder(LOCKED_BORDER);
+		addMouseListener(cellMouseAdapter);
+		
 		unlocked = false;
 		flagged = false;
 		this.isBomb = isBomb;
