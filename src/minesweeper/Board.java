@@ -76,7 +76,7 @@ public class Board extends JFrame {
 		}
 	};
 
-	public Board(int width, int height, int rows, int cols, int numBombs, int gap) {
+	public Board(int width, int height, int cols, int rows, int numBombs, int gap) {
 		this.rows = rows;
 		this.cols = cols;
 		// TODO make numBobs calculate when create actual bomb
@@ -118,7 +118,7 @@ public class Board extends JFrame {
 	private void initializeGrid() {
 		grid = new JPanel();
 
-		grid.setLayout(new GridLayout(cols, rows));
+		grid.setLayout(new GridLayout(rows, cols));
 		grid.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		grid.setBackground(Color.LIGHT_GRAY);
 
@@ -141,11 +141,11 @@ public class Board extends JFrame {
 		Collections.shuffle(list);
 
 		int position = 0;
-		for (int col = 0; col < cols; col++) {
-			for (int row = 0; row < rows; row++) {
-				final Cell cell = new Cell(list.get(position) < numBombs, row, col, cellMouseAdapter);
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				Cell cell = new Cell(list.get(position) < numBombs, row, col, cellMouseAdapter);
 				cells[col][row] = cell;
-
+				
 				grid.add(cell);
 				position++;
 			}
@@ -293,9 +293,9 @@ public class Board extends JFrame {
 		final Stack<Cell> stack = new Stack<Cell>();
 		stack.push(currentCell);
 		while (!stack.isEmpty()) {
-			final Cell cell = stack.pop();
-			final int row = cell.getCol();
-			final int col = cell.getRow();
+			Cell cell = stack.pop();
+			int row = cell.getRow();
+			int col = cell.getCol();
 			cell.unlock();
 
 			// check all neighbors
@@ -303,9 +303,9 @@ public class Board extends JFrame {
 				for (int j = -1; j < 2; j++) {
 
 					// i != 0 || j != 0 - skip center box
-					if (isCell(row + i, col + j) && (i != 0 || j != 0)) {
+					if (isCell(col + j, row + i) && (i != 0 || j != 0)) {
 
-						final Cell thisCell = cells[row + i][col + j];
+						Cell thisCell = cells[col + j][row + i];
 
 						// the following check is only for flag unlock and not 0 unlock
 						if (thisCell.isBomb() && !thisCell.isFlagged()) {
@@ -341,7 +341,7 @@ public class Board extends JFrame {
 		}
 	}
 
-	private boolean isCell(int row, int col) {
+	private boolean isCell(int col, int row) {
 		return row >= 0 && row < rows && col >= 0 && col < cols;
 	}
 

@@ -76,7 +76,7 @@ public class Minesweeper extends JFrame {
 	 * @param boardNumBombs The number of bombs in the playing board
 	 * @param boardGap The amount of gap spacing to use in the playing board
 	 */
-	private void addButton(String name, String color, int boardWidth, int boardHeight, int boardRows, int boardCols,
+	private void addButton(String name, String color, int boardWidth, int boardHeight, int boardCols, int boardRows,
 			int boardNumBombs, int boardGap) {
 		// create a new start button
 		final JButton button = new JButton(name);
@@ -92,7 +92,7 @@ public class Minesweeper extends JFrame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new Board(boardWidth, boardHeight, boardRows, boardCols, boardNumBombs, boardGap);
+				new Board(boardWidth, boardHeight, boardCols, boardRows, boardNumBombs, boardGap);
 				dispose();
 			}
 		});
