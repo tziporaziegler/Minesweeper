@@ -24,6 +24,7 @@ public class Minesweeper extends JFrame {
 	private int numberOfButtons;
 
 	private Minesweeper() {
+		new Fonts();
 		setSize(LEVEL_MENU_WIDTH, LEVEL_MENU_HEIGHT);
 		setUndecorated(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

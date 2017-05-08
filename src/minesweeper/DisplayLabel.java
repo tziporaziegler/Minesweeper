@@ -25,6 +25,7 @@ public abstract class DisplayLabel extends JLabel {
 		setOpaque(true);
 		setBorder(DISPLAY_BORDER);
 		setHorizontalAlignment(JLabel.CENTER);
+		setFont(Fonts.DISPLAY_FONT);
 	}
 
 	public void setText(int textNum) {

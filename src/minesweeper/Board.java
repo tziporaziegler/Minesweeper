@@ -2,16 +2,11 @@ package minesweeper;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
@@ -35,7 +30,6 @@ public class Board extends JFrame {
 	private final int cols;
 	private final int rows;
 	private Cell[][] cells;
-	private Font cellFont;
 
 	private boolean gameOver = false;
 	private boolean firstClick = true;
@@ -121,31 +115,16 @@ public class Board extends JFrame {
 		add(topPanel, BorderLayout.NORTH);
 	}
 
-	private void setCellFont() {
-		try {
-			final URL fontUrl = new URL("http://www.webpagepublicity.com/free-fonts/t/Tin%20Birdhouse.ttf");
-			cellFont = Font.createFont(Font.TRUETYPE_FONT, fontUrl.openStream());
-			cellFont = cellFont.deriveFont(15f);
-			final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-			ge.registerFont(cellFont);
-		}
-		catch (FontFormatException | IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void initializeGrid() {
-		setCellFont();
-
 		grid = new JPanel();
 
 		grid.setLayout(new GridLayout(cols, rows));
 		grid.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		grid.setBackground(Color.LIGHT_GRAY);
 
-		refreshCells();
-
 		add(grid, BorderLayout.CENTER);
+
+		refreshCells();
 	}
 
 	private void refreshCells() {
@@ -164,7 +143,7 @@ public class Board extends JFrame {
 		int position = 0;
 		for (int col = 0; col < cols; col++) {
 			for (int row = 0; row < rows; row++) {
-				final Cell cell = new Cell(list.get(position) < numBombs, row, col, cellFont, cellMouseAdapter);
+				final Cell cell = new Cell(list.get(position) < numBombs, row, col, cellMouseAdapter);
 				cells[col][row] = cell;
 
 				grid.add(cell);

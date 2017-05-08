@@ -1,7 +1,6 @@
 package minesweeper;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -40,14 +39,14 @@ public class Cell extends JButton {
 		}
 	});
 
-	public Cell(boolean isBomb, int row, int col, Font font, MouseAdapter cellMouseAdapter) {
+	public Cell(boolean isBomb, int row, int col, MouseAdapter cellMouseAdapter) {
 		setBackground(Color.LIGHT_GRAY);
-		setFont(font);
+		setFont(Fonts.CELL_FONT);
 		// setFont(new Font("Acens", Font.BOLD, 15));
 
 		setBorder(LOCKED_BORDER);
 		addMouseListener(cellMouseAdapter);
-		
+
 		unlocked = false;
 		flagged = false;
 		this.isBomb = isBomb;

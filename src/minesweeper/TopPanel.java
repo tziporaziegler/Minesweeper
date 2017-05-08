@@ -50,9 +50,6 @@ public class TopPanel extends JPanel {
 
 		timerDisplay = new TimerDisplay(colorNum);
 		add(timerDisplay);
-
-		// create font that will be used for bombsLeft and timer
-		new DisplayFontThread(bombsLeftDisplay, timerDisplay).start();
 	}
 
 	private void initializePanelDesign(int gap) {
