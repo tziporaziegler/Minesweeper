@@ -8,11 +8,11 @@ public class BoardTest {
 
 	@Test
 	public void testBoardSetUpUnder500MS() {
-		long startTime = System.currentTimeMillis();
+		final long startTime = System.currentTimeMillis();
 		new Board(184, 247, 9, 9, 10, 14);
 
-		long endTime = System.currentTimeMillis();
-		long totalMS = (endTime - startTime);
+		final long endTime = System.currentTimeMillis();
+		final long totalMS = (endTime - startTime);
 
 		System.out.println("new Board() time: " + totalMS + "ms");
 		assertTrue(totalMS < 500);

@@ -37,7 +37,7 @@ public final class Fonts {
 			// final URL fontUrl = new URL(fontPath);
 			// final Font font = Font.createFont(Font.TRUETYPE_FONT, fontUrl.openStream()).deriveFont(fontSize);
 
-			Font font = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream(fontPath))
+			final Font font = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream(fontPath))
 					.deriveFont(fontSize);
 
 			GE.registerFont(font);
