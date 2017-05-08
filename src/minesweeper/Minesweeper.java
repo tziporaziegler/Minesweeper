@@ -47,11 +47,18 @@ public class Minesweeper extends JFrame {
 	 * Options currently include Beginner, Intermediate and Expert levels.
 	 */
 	private void addLevelOptionButtons() {
-		addButton("BEGINNER", "#5CE62E", 184, 247, 9, 9, 10, 14);
-		addButton("INTERMEDIATE", "#FFD633", 324, 387, 16, 16, 40, 61);
-		addButton("EXPERT", "#FF2A2A", 604, 387, 30, 16, 99, 154);
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			addButton("BEGINNER", "#5CE62E", 181, 242, 9, 9, 10, 14);
+			addButton("INTERMEDIATE", "#FFD633", 314, 384, 16, 16, 40, 60);
+			addButton("EXPERT", "#FF2A2A", 580, 384, 30, 16, 99, 148);
+		}
+		else {
+			addButton("BEGINNER", "#5CE62E", 184, 247, 9, 9, 10, 14);
+			addButton("INTERMEDIATE", "#FFD633", 324, 387, 16, 16, 40, 61);
+			addButton("EXPERT", "#FF2A2A", 604, 387, 30, 16, 99, 154);
+		}
 
-		// TODO Custom: Any values from 8 × 8 or 9 × 9 to 30 × 24 field, with 10 to 668 mines.
+		// TODO Custom: Any values from 8x8 or 9x9 to 30x24 field, with 10 to 668 mines.
 		// figure out ratio of board pixel size per cell
 	}
 
@@ -69,7 +76,7 @@ public class Minesweeper extends JFrame {
 	 * @param boardNumBombs The number of bombs in the playing board
 	 * @param boardGap The amount of gap spacing to use in the playing board
 	 */
-	private void addButton(String name, String color, int boardHeight, int boardWidth, int boardRows, int boardCols,
+	private void addButton(String name, String color, int boardWidth, int boardHeight, int boardRows, int boardCols,
 			int boardNumBombs, int boardGap) {
 		// create a new start button
 		final JButton button = new JButton(name);
@@ -85,7 +92,7 @@ public class Minesweeper extends JFrame {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new Board(boardHeight, boardWidth, boardRows, boardCols, boardNumBombs, boardGap);
+				new Board(boardWidth, boardHeight, boardRows, boardCols, boardNumBombs, boardGap);
 				dispose();
 			}
 		});
