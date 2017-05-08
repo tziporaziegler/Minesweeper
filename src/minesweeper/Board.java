@@ -143,7 +143,7 @@ public class Board extends JFrame {
 		int position = 0;
 		for (int row = 0; row < rows; row++) {
 			for (int col = 0; col < cols; col++) {
-				Cell cell = new Cell(list.get(position) < numBombs, row, col, cellMouseAdapter);
+				final Cell cell = new Cell(list.get(position) < numBombs, row, col, cellMouseAdapter);
 				cells[col][row] = cell;
 				
 				grid.add(cell);
@@ -293,9 +293,9 @@ public class Board extends JFrame {
 		final Stack<Cell> stack = new Stack<Cell>();
 		stack.push(currentCell);
 		while (!stack.isEmpty()) {
-			Cell cell = stack.pop();
-			int row = cell.getRow();
-			int col = cell.getCol();
+			final Cell cell = stack.pop();
+			final int row = cell.getRow();
+			final int col = cell.getCol();
 			cell.unlock();
 
 			// check all neighbors
@@ -305,7 +305,7 @@ public class Board extends JFrame {
 					// i != 0 || j != 0 - skip center box
 					if (isCell(col + j, row + i) && (i != 0 || j != 0)) {
 
-						Cell thisCell = cells[col + j][row + i];
+						final Cell thisCell = cells[col + j][row + i];
 
 						// the following check is only for flag unlock and not 0 unlock
 						if (thisCell.isBomb() && !thisCell.isFlagged()) {
