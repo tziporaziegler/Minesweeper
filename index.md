@@ -1,9 +1,11 @@
-Features include:
+## Features
 
 - Beginner, Intermediate and Expert level options
 - Timer and bombs left displays that change color every 10 seconds
 - Too many flags display warning
 - Fireworks when you win!
+
+## Screenshot
 
 ![WinScreenshot][2]
 
