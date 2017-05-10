@@ -47,13 +47,18 @@ Happy mine hunting!
 
 ## Downloading
 
-Runnable `.jar` files for Mac and Windows are available for download
+A runnable `.jar` file is available for download
 in the [latest release][3].
 
 To download or clone a complete copy of the source code, use Git or checkout
 with SVN using `https://github.com/tziporaziegler/Minesweeper.git`
 web URL. A `.zip` and `tar.gz` file is also available in the latest release.
 
+
+## OS Support
+
+This program currently supports and has been tested for both Mac and Windows.
+
 [1]:https://en.wikipedia.org/wiki/Microsoft_Minesweeper
-[2]:https://github.com/tziporaziegler/Minesweeper/blob/master/screenshots/ExpWin256.png
+[2]:https://raw.githubusercontent.com/tziporaziegler/Minesweeper/master/screenshots/ExpWin256.png
 [3]:https://github.com/tziporaziegler/Minesweeper/releases/latest
