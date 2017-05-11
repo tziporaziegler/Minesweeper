@@ -54,7 +54,6 @@ To download or clone a complete copy of the source code, use Git or checkout
 with SVN using `https://github.com/tziporaziegler/Minesweeper.git`
 web URL. A `.zip` and `tar.gz` file is also available in the latest release.
 
-
 ## OS Support
 
 This program currently supports and has been tested for both Mac and Windows.
