@@ -1,4 +1,5 @@
 title: Minesweeper
 description: An enhanced version of the classic Minesweeper game with fireworks!
 show_downloads: true
+google_analytics: UA-99007846-1
 theme: jekyll-theme-slate
